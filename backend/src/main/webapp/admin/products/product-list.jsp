@@ -86,7 +86,7 @@
                                 <div class="product-thumbnail">
                                         <%-- Xử lý hiển thị ảnh: Nếu có link thì hiện, không thì hiện ảnh lỗi --%>
                                     <img src="${p.imageUrl}" alt="${p.name}"
-                                         onerror="this.src='https://via.placeholder.com/50'">
+                                         >
 
                                         <%-- Nếu là sản phẩm nổi bật thì hiện ngôi sao --%>
                                     <c:if test="${p.featured}">

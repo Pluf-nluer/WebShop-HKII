@@ -3,6 +3,8 @@ package com.example.backend.service;
 import com.example.backend.dao.ProductDAO;
 import com.example.backend.model.Product;
 import com.example.backend.model.ProductAttribute;
+import com.example.backend.model.ProductImage;
+
 import java.util.List;
 
 public class ProductService {
@@ -24,14 +26,17 @@ public class ProductService {
     }
 
 
-    public boolean updateProduct(Product product, ProductAttribute attribute) {
-        boolean isProductUpdated = productDAO.updateProduct(product);
+    public void updateProduct(Product product, ProductAttribute attribute, ProductImage image) {
+        // Cập nhật bảng product
+        productDAO.updateProduct(product);
 
-        if (isProductUpdated && attribute != null) {
-            // return attributeDAO.updateAttribute(attribute);
-            return true; // Tạm thời trả về true
+        // Cập nhật bảng attribute và image dựa trên ID đã có của product
+        productDAO.updateProductAttribute(product.getId(), attribute);
+
+        // Chỉ cập nhật ảnh nếu có đường dẫn ảnh mới
+        if (image.getImageUrl() != null && !image.getImageUrl().isEmpty()) {
+            productDAO.updateProductImage(product.getId(), image);
         }
-        return isProductUpdated;
     }
 
     public int calculateDiscountPercentage(double originalPrice, double salePrice) {

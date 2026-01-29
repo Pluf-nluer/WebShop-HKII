@@ -231,9 +231,46 @@ public class ProductDAO {
         }
         return list;
     }
+    public boolean updateProductImage(int productId, ProductImage pi) {
+        String updateSql = "UPDATE product_images SET image_url = ? WHERE product_id = ?";
+        String insertSql = "INSERT INTO product_images (product_id, image_url) VALUES (?, ?)";
 
+        try (Connection conn = DBConnection.getConnection()) {
+            try (PreparedStatement ps = conn.prepareStatement(updateSql)) {
+                ps.setString(1, pi.getImageUrl());
+                ps.setInt(2, productId);
+                int rows = ps.executeUpdate();
+                if (rows > 0) return true;
+            }
 
-    public boolean updateProduct(Product p) {
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public boolean updateProductAttribute(int productId, ProductAttribute pa) {
+        String updateSql = "UPDATE product_attributes SET origin = ?, material = ?, size = ?, weight = ?, color = ? WHERE product_id = ?";
+        String insertSql = "INSERT INTO product_attributes (product_id, origin, material, size, weight, color, created_at) VALUES (?, ?, ?, ?, ?, ?, NOW())";
+
+        try (Connection conn = DBConnection.getConnection()) {
+            try (PreparedStatement ps = conn.prepareStatement(updateSql)) {
+                ps.setString(1, pa.getOrigin());
+                ps.setString(2, pa.getMaterial());
+                ps.setString(3, pa.getSize());
+                ps.setString(4, pa.getWeight());
+                ps.setString(5, pa.getColor());
+                ps.setInt(6, productId);
+                int rows = ps.executeUpdate();
+                if (rows > 0) return true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    public int updateProduct(Product p) {
         String sql = "UPDATE products SET name=?, price=?, stock=?, " +
                 "full_description=?, status=?, is_featured=?, " +
                 "category_id=?, updated_at=NOW() WHERE id=?";
@@ -252,12 +289,11 @@ public class ProductDAO {
             ps.setInt(7, p.getCategoryId());
             ps.setInt(8, p.getId());
 
-            int rows = ps.executeUpdate();
-            return rows > 0;
+            ps.executeUpdate();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return false;
+        return p.getId();
     }
 
     public int insertProduct(Product p) {

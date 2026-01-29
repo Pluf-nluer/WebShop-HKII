@@ -24,6 +24,7 @@ public class Product {
     private Timestamp updatedAt;
 
     private ProductAttribute attribute;
+    private double discountPercent;
 
     public Product() {
     }
@@ -40,6 +41,14 @@ public class Product {
         this.categoryId = categoryId;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+    }
+
+    public double getDiscountPercent() { return discountPercent; }
+    public void setDiscountPercent(double discountPercent) { this.discountPercent = discountPercent; }
+
+    // Hàm tiện ích để lấy giá đã giảm
+    public double getSalePrice() {
+        return this.price * (1 - this.discountPercent);
     }
 
 
@@ -64,10 +73,7 @@ public class Product {
     }
 
     public String getImageUrl() {
-        if (this.image != null && this.image.getImageUrl() != null) {
-            return this.image.getImageUrl();
-        }
-        return "https://via.placeholder.com/300";
+        return (image != null) ? image.getImageUrl() : "";
     }
 
     public void setImage(ProductImage image) {

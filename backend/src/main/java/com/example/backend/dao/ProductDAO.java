@@ -37,7 +37,7 @@ public class ProductDAO {
     public List<Product> getSaleProducts() {
         List<Product> list = new ArrayList<>();
 
-        String sql = "SELECT p.* FROM product p JOIN product_categories pc ON p.category_id = pc.id " +
+        String sql = "SELECT p.* FROM products p JOIN product_categories pc ON p.category_id = pc.id " +
                 "JOIN sale s on pc.sale_id = s.id "+
                 "WHERE NOW() BETWEEN s.start_sale AND s.end_sale AND p.status = 'active'";
 
@@ -57,24 +57,51 @@ public class ProductDAO {
     /**
      * Xem danh sách toàn bộ sản phẩm
      */
+//    public List<Product> getAllProducts(int offset, int limit) {
+//        List<Product> list = new ArrayList<>();
+//
+//       String sql = "SELECT p.*, pi.image_url FROM products p " +
+//                "LEFT JOIN product_images pi ON p.id = pi.product_id " +
+//                "GROUP BY p.id ORDER BY p.id LIMIT ?, ?";
+//
+//
+//        try (Connection conn = DBConnection.getConnection();
+//        PreparedStatement ps = conn.prepareStatement(sql);) {
+//            ps.setInt(1, offset);
+//            ps.setInt(2, limit);
+//            ResultSet rs = ps.executeQuery();
+//            while(rs.next()) {
+//                list.add(mapResultSetToProduct(rs));
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return list;
+//    }
     public List<Product> getAllProducts(int offset, int limit) {
         List<Product> list = new ArrayList<>();
-
-       String sql = "SELECT p.*, pi.image_url FROM products p " +
-                "LEFT JOIN product_images pi ON p.id = pi.product_id " +
-                "GROUP BY p.id ORDER BY p.id LIMIT ?, ?";
-
+        String sql = "SELECT p.*, " +
+                "(SELECT pi.image_url FROM product_images pi WHERE pi.product_id = p.id LIMIT 1) AS image_url, " +
+                "s.discount_percent " +
+                "FROM products p " +
+                "LEFT JOIN product_categories pc ON p.category_id = pc.id " +
+                "LEFT JOIN sale s ON pc.sale_id = s.id AND (NOW() BETWEEN s.start_sale AND s.end_sale) " +
+                "ORDER BY p.id LIMIT ?, ?";
 
         try (Connection conn = DBConnection.getConnection();
-        PreparedStatement ps = conn.prepareStatement(sql);) {
+             PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, offset);
             ps.setInt(2, limit);
-            ResultSet rs = ps.executeQuery();
-            while(rs.next()) {
-                list.add(mapResultSetToProduct(rs));
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Product p = mapResultSetToProduct(rs);
+                    // Nạp giá trị discount_percent lấy được từ LEFT JOIN
+                    p.setDiscountPercent(rs.getDouble("discount_percent"));
+                    list.add(p);
+                }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace(); // Log lỗi này ra Console để kiểm tra nếu vẫn 500
         }
         return list;
     }
@@ -94,11 +121,15 @@ public class ProductDAO {
 
     public List<Product> getProductsByCategory(int categoryId, int offset, int limit) {
         List<Product> list = new ArrayList<>();
-        String sql = "SELECT p.*, MAX(pi.image_url) AS image_url " +
+        // Cập nhật SQL để JOIN lấy discount_percent và dùng Subquery lấy 1 ảnh duy nhất
+        String sql = "SELECT p.*, " +
+                "(SELECT pi.image_url FROM product_images pi WHERE pi.product_id = p.id LIMIT 1) AS image_url, " +
+                "s.discount_percent " +
                 "FROM products p " +
-                "LEFT JOIN product_images pi ON p.id = pi.product_id " +
+                "LEFT JOIN product_categories pc ON p.category_id = pc.id " +
+                "LEFT JOIN sale s ON pc.sale_id = s.id AND (NOW() BETWEEN s.start_sale AND s.end_sale) " +
                 "WHERE p.category_id = ? AND p.status = 'active' " +
-                "GROUP BY p.id ORDER BY p.id LIMIT ?, ?";
+                "ORDER BY p.id LIMIT ?, ?";
 
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -106,9 +137,13 @@ public class ProductDAO {
             ps.setInt(2, offset);
             ps.setInt(3, limit);
 
-            ResultSet rs = ps.executeQuery();
-            while (rs.next()) {
-                list.add(mapResultSetToProduct(rs));
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Product p = mapResultSetToProduct(rs);
+                    // Nạp giá trị discount_percent lấy được từ JOIN
+                    p.setDiscountPercent(rs.getDouble("discount_percent"));
+                    list.add(p);
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

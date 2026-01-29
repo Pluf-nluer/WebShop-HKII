@@ -33,7 +33,7 @@
     </a>
 
     <%-- 3. Quản lý danh mục --%>
-    <a href="${pageContext.request.contextPath}/admin/categories/list.jsp"
+    <a href="${pageContext.request.contextPath}/admin/categories"
        class="admin-menu-item ${param.active == 'categories' ? 'active' : ''}">
       <i class="fa-solid fa-folder-tree"></i> <span>Quản lý danh mục</span>
     </a>

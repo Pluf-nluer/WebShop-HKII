@@ -86,6 +86,13 @@
                     <option value="0">Ẩn</option>
                   </select>
                 </div>
+                <div class="form-group">
+                  <label for="category-sale">Chương trình Sale (ID) <span class="required">*</span></label>
+                  <input type="number" id="category-sale" name="sale_id" value="1" min="1" required>
+                  <small style="color: #666; display: block; margin-top: 4px;">
+                    Mặc định là 1 (Không giảm giá)
+                  </small>
+                </div>
               </div>
             </div>
 
@@ -102,33 +109,31 @@
           <div class="tree-header">
             <h3><i class="fa-solid fa-sitemap"></i> Cây danh mục</h3>
           </div>
+          <%-- Trong file categories.jsp --%>
           <div class="tree-body">
             <ul class="category-tree">
-              <%--
-                 Đây là nơi bạn sử dụng vòng lặp c:forEach
-                 để render dữ liệu thật từ database
-              --%>
-              <li class="category-item level-1">
-                <div class="category-row">
-                  <div class="category-info">
-                    <button class="toggle-btn"><i class="fa-solid fa-chevron-down"></i></button>
-                    <div class="category-icon"><i class="fa-solid fa-folder"></i></div>
-                    <div class="category-details">
-                      <h4>Thủ công mỹ nghệ</h4>
-                      <span class="category-slug">thu-cong-my-nghe</span>
+              <c:forEach var="root" items="${categories}">
+                <li class="category-item level-1">
+                  <div class="category-row">
+                    <div class="category-info">
+                      <div class="category-icon"><i class="fa-solid fa-folder"></i></div>
+                      <div class="category-details">
+                        <h4>${root.name}</h4>
+                        <span class="badge-sale">
+                           Sale ID: ${root.sale_id}
+                        </span>
+                      </div>
+                    </div>
+                    <div class="category-meta">
+                      <span class="status-badge ${root.status == 'active' ? 'visible' : ''}">${root.status}</span>
+                    </div>
+                    <div class="category-actions">
+                      <a href="edit?id=${root.id}" class="btn-edit"><i class="fa-solid fa-edit"></i></a>
+                      <button class="btn-delete" onclick="confirmDelete('${root.id}')"><i class="fa-solid fa-trash"></i></button>
                     </div>
                   </div>
-                  <div class="category-meta">
-                    <span class="product-count"><i class="fa-solid fa-box"></i> 120 sản phẩm</span>
-                    <span class="status-badge visible">Hiển thị</span>
-                  </div>
-                  <div class="category-actions">
-                    <a href="edit?id=1" class="btn-edit"><i class="fa-solid fa-edit"></i></a>
-                    <button class="btn-delete" onclick="confirmDelete(1)"><i class="fa-solid fa-trash"></i></button>
-                  </div>
-                </div>
-                <%-- Thêm các cấp con ở đây --%>
-              </li>
+                </li>
+              </c:forEach>
             </ul>
           </div>
         </div>

@@ -158,12 +158,17 @@ public class AdminProductServlet extends HttpServlet {
         pa.setProductId(productId); // Đừng quên set ID để biết update cho sp nào
         pa.setMaterial(request.getParameter("material"));
         pa.setOrigin(request.getParameter("origin"));
-        pa.setSize(request.getParameter("size"));
+        pa.setSize(request.getParameter("dimensions"));
         pa.setWeight(request.getParameter("weight"));
-        pa.setColor(request.getParameter("color"));
+        pa.setColor(request.getParameter("manufacturer"));
+
+        String imageUrl = getFinalImageUrl(request);
+        ProductImage pi = new ProductImage();
+        pi.setProductId(productId);
+        pi.setImageUrl(imageUrl);
 
         // 3. Gọi service cập nhật cả hai
-        productService.updateProduct(product, pa);
+        productService.updateProduct(product, pa, pi);
 
         response.sendRedirect(request.getContextPath() + "/admin/products?message=updated");
     }

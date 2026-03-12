@@ -86,6 +86,16 @@
                     <option value="0">Ẩn</option>
                   </select>
                 </div>
+                  <div class="form-group">
+                      <label for="category-sale">Chương trình Sale <span class="required">*</span></label>
+                      <select id="category-sale" name="sale_id" required>
+                          <c:forEach var="s" items="${salesList}">
+                              <option value="${s.id}">
+                                  Giảm ${s.discountPercent * 100}% (Mã: ${s.id})
+                              </option>
+                          </c:forEach>
+                      </select>
+                  </div>
               </div>
             </div>
 
@@ -102,35 +112,66 @@
           <div class="tree-header">
             <h3><i class="fa-solid fa-sitemap"></i> Cây danh mục</h3>
           </div>
-          <div class="tree-body">
-            <ul class="category-tree">
-              <%--
-                 Đây là nơi bạn sử dụng vòng lặp c:forEach
-                 để render dữ liệu thật từ database
-              --%>
-              <li class="category-item level-1">
-                <div class="category-row">
-                  <div class="category-info">
-                    <button class="toggle-btn"><i class="fa-solid fa-chevron-down"></i></button>
-                    <div class="category-icon"><i class="fa-solid fa-folder"></i></div>
-                    <div class="category-details">
-                      <h4>Thủ công mỹ nghệ</h4>
-                      <span class="category-slug">thu-cong-my-nghe</span>
-                    </div>
-                  </div>
-                  <div class="category-meta">
-                    <span class="product-count"><i class="fa-solid fa-box"></i> 120 sản phẩm</span>
-                    <span class="status-badge visible">Hiển thị</span>
-                  </div>
-                  <div class="category-actions">
-                    <a href="edit?id=1" class="btn-edit"><i class="fa-solid fa-edit"></i></a>
-                    <button class="btn-delete" onclick="confirmDelete(1)"><i class="fa-solid fa-trash"></i></button>
-                  </div>
+            <div class="tree-body">
+                <div class="category-tree">
+                    <c:forEach var="root" items="${categories}">
+                        <%-- Level 1: Danh mục gốc --%>
+                        <div class="category-item level-1">
+                            <div class="category-row">
+                                <div class="category-info">
+                                    <button class="toggle-btn"><i class="fa-solid fa-chevron-down"></i></button>
+                                    <div class="category-icon">
+                                        <i class="fa-solid fa-folder"></i>
+                                    </div>
+                                    <div class="category-details">
+                                        <h4>${root.name}</h4>
+                                        <span class="category-slug">ID: ${root.id}</span>
+                                    </div>
+                                </div>
+
+                                <div class="category-meta">
+                        <span class="status-badge visible">
+                            <i class="fa-solid fa-tag"></i> Sale ID: ${root.sale_id}
+                        </span>
+                                </div>
+
+                                <div class="category-actions">
+                                    <a href="${pageContext.request.contextPath}/admin/categories?action=edit&id=${root.id}" class="btn-edit">
+                                        <i class="fa-solid fa-pen"></i>
+                                    </a>
+                                    <button onclick="confirmDelete(${root.id})" class="btn-delete" title="Xóa">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                                <%-- Sub-tree: Danh mục con --%>
+                            <div class="category-children">
+                                <c:forEach var="sub" items="${allCategories}">
+                                    <c:if test="${sub.parentId == root.id}">
+                                        <div class="category-item level-2">
+                                            <div class="category-row">
+                                                <div class="category-info">
+                                                    <div class="category-icon" style="background: var(--admin-info-soft); color: var(--admin-info);">
+                                                        <i class="fa-solid fa-arrow-right"></i>
+                                                    </div>
+                                                    <div class="category-details">
+                                                        <h4>${sub.name}</h4>
+                                                    </div>
+                                                </div>
+                                                <div class="category-actions">
+                                                    <a href="edit?id=${sub.id}" class="btn-edit"><i class="fa-solid fa-pen"></i></a>
+                                                    <button onclick="confirmDelete(${sub.id})" class="btn-delete"><i class="fa-solid fa-trash"></i></button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </c:if>
+                                </c:forEach>
+                            </div>
+                        </div>
+                    </c:forEach>
                 </div>
-                <%-- Thêm các cấp con ở đây --%>
-              </li>
-            </ul>
-          </div>
+            </div>
         </div>
       </div>
     </div>

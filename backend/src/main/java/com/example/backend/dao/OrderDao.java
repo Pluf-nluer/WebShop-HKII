@@ -93,13 +93,14 @@ public class OrderDao {
         }
         return orderId;
     }
+
     // Lấy danh sách đơn hàng trong quản lí đơn hàng admin
-    public List<Order> getAllOrders(){
+    public List<Order> getAllOrders() {
         List<Order> list = new ArrayList<>();
         String sql = "select * from orders order by id desc";
-        try(Connection conn = DBConnection.getConnection();
-            PreparedStatement pre = conn.prepareStatement(sql);
-            ResultSet rs = pre.executeQuery()){
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pre = conn.prepareStatement(sql);
+             ResultSet rs = pre.executeQuery()) {
 
             while (rs.next()) {
                 Order o = new Order();
@@ -123,11 +124,11 @@ public class OrderDao {
         return list;
     }
 
-    public List<Order> getOrdersByUserId(int userId){
+    public List<Order> getOrdersByUserId(int userId) {
         List<Order> list = new ArrayList<>();
         String sql = "select * from orders where user_id = ? order by id desc";
-        try(Connection conn = DBConnection.getConnection();
-            PreparedStatement pre = conn.prepareStatement(sql)){
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement pre = conn.prepareStatement(sql)) {
 
             pre.setInt(1, userId);
             ResultSet rs = pre.executeQuery();
@@ -153,16 +154,17 @@ public class OrderDao {
         }
         return list;
     }
+
     // Xem đơn hàng theo id
-    public Order getOrderById(int id){
+    public Order getOrderById(int id) {
         String sql = "select * from orders where id = ?";
-        try(Connection con  = DBConnection.getConnection();
-            PreparedStatement pre = con.prepareStatement(sql)){
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement pre = con.prepareStatement(sql)) {
 
-            pre.setInt(1,id);
-            ResultSet rs= pre.executeQuery();
+            pre.setInt(1, id);
+            ResultSet rs = pre.executeQuery();
 
-            if(rs.next()){
+            if (rs.next()) {
                 Order o = new Order();
                 o.setId(rs.getInt("id"));
                 o.setUser_id(rs.getInt("user_id"));
@@ -177,12 +179,12 @@ public class OrderDao {
                 return o;
             }
 
-        }
-        catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
+
     public List<OrderItem> getOrderItems(int orderId) {
         List<OrderItem> list = new ArrayList<>();
         // Chỉ định rõ cột của từng bảng và dùng bí danh (alias) nếu cần
@@ -219,7 +221,9 @@ public class OrderDao {
                 item.setProduct(p);
                 list.add(item);
             }
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return list;
     }
 
@@ -236,8 +240,12 @@ public class OrderDao {
                 o.setTotal_amount(rs.getDouble("total_amount"));
                 return o;
             }
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         return null;
+    }
+
     public boolean cancelOrder(int orderId, int userId) {
         String sql = "UPDATE orders SET order_status = 'Cancelled', updated_at = ? WHERE id = ? AND user_id = ? AND order_status = 'Pending'";
         try (Connection con = DBConnection.getConnection();
@@ -250,6 +258,22 @@ public class OrderDao {
             int affectedRows = pre.executeUpdate();
             return affectedRows > 0; // Trả về true nếu cập nhật thành công
 
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean updateOrderStatus(int orderId, String status) {
+        String sql = "UPDATE orders SET order_status = ?, updated_at = ? WHERE id = ?";
+        try (Connection con = DBConnection.getConnection();
+             PreparedStatement pre = con.prepareStatement(sql)) {
+
+            pre.setString(1, status);
+            pre.setTimestamp(2, new Timestamp(System.currentTimeMillis()));
+            pre.setInt(3, orderId);
+
+            return pre.executeUpdate() > 0;
         } catch (Exception e) {
             e.printStackTrace();
             return false;

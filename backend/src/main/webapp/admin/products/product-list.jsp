@@ -36,20 +36,6 @@
                 </div>
             </div>
 
-<%--            <div class="filter-section">--%>
-<%--                <form action="${pageContext.request.contextPath}/admin/products" method="get" class="filter-form">--%>
-<%--                    <div class="search-wrapper">--%>
-<%--                        <i class="fa-solid fa-search"></i>--%>
-<%--                        <input type="text" name="search" placeholder="Tìm kiếm sản phẩm..." class="search-input"--%>
-<%--                               value="${param.search}">--%>
-<%--                    </div>--%>
-<%--                    <div class="filter-actions">--%>
-<%--                        <button type="submit" class="btn-apply-filter"><i class="fa-solid fa-filter"></i> Tìm kiếm--%>
-<%--                        </button>--%>
-<%--                    </div>--%>
-<%--                </form>--%>
-<%--            </div>--%>
-
             <c:if test="${not empty param.message}">
                 <div style="padding: 10px; margin-bottom: 15px; background: #d4edda; color: #155724; border-radius: 5px;">
                     <c:choose>
@@ -69,6 +55,7 @@
                         <th class="col-name">Tên sản phẩm</th>
                         <th class="col-category">Danh mục (ID)</th>
                         <th class="col-price">Giá</th>
+                        <th class="col-sale">Sale</th>
                         <th class="col-stock">Tồn kho</th>
                         <th class="col-status">Trạng thái</th>
                         <th class="col-actions">Thao tác</th>
@@ -86,7 +73,7 @@
                                 <div class="product-thumbnail">
                                         <%-- Xử lý hiển thị ảnh: Nếu có link thì hiện, không thì hiện ảnh lỗi --%>
                                     <img src="${p.imageUrl}" alt="${p.name}"
-                                         onerror="this.src='https://via.placeholder.com/50'">
+                                         >
 
                                         <%-- Nếu là sản phẩm nổi bật thì hiện ngôi sao --%>
                                     <c:if test="${p.featured}">
@@ -105,11 +92,37 @@
                             </td>
                             <td class="col-price">
                                 <div class="price-wrapper">
-                                    <span class="price">
-                                        <fmt:setLocale value="vi_VN"/>
-                                        <fmt:formatNumber value="${p.price}" type="currency" currencySymbol="đ"/>
-                                    </span>
+                                    <fmt:setLocale value="vi_VN"/>
+                                    <c:choose>
+                                        <c:when test="${p.discountPercent > 0}">
+                                            <span class="price-old" style="text-decoration: line-through; color: #999; font-size: 0.8em;">
+                                                <fmt:formatNumber value="${p.price}" type="currency" currencySymbol="đ"/>
+                                            </span><br>
+                                                                        <span class="price-sale" style="color: #e74c3c; font-weight: bold;">
+                                                <fmt:formatNumber value="${p.getSalePrice()}" type="currency" currencySymbol="đ"/>
+                                            </span>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <span class="price">
+                                                <fmt:formatNumber value="${p.price}" type="currency" currencySymbol="đ"/>
+                                            </span>
+                                        </c:otherwise>
+                                    </c:choose>
                                 </div>
+                            </td>
+
+                                <%-- Cột Sale --%>
+                            <td class="col-sale">
+                                <c:choose>
+                                    <c:when test="${p.discountPercent > 0}">
+                                        <span class="badge" style="background: #ff4757; color: white; padding: 2px 5px; border-radius: 3px;">
+                                            -<fmt:formatNumber value="${p.discountPercent * 100}" maxFractionDigits="0"/>%
+                                        </span>
+                                    </c:when>
+                                    <c:otherwise>
+                                        <span class="text-muted">-</span>
+                                    </c:otherwise>
+                                </c:choose>
                             </td>
                             <td class="col-stock">
                                 <div class="stock-wrapper">

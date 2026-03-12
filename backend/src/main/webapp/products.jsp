@@ -36,23 +36,10 @@
                     </c:forEach>
                 </select>
             </form>
-            <div class="select">
-                <select name="bo-loc" id="bo-loc">
-                    <option selected>Bộ lọc</option>
-                </select>
-            </div>
         </div>
 
         <div class="sort-control">
             <span id="sor">Sắp xếp: </span>
-            <button type="button" class="sort-btn">
-                <i class="fa-solid fa-arrow-down-a-z"></i>
-                <span>A-Z</span>
-            </button>
-            <button type="button" class="sort-btn">
-                <i class="fa-solid fa-arrow-up-z-a"></i>
-                <span>Z-A</span>
-            </button>
             <button type="button" class="sort-btn">
                 <i class="fa-solid fa-arrow-up-right-dots"></i>
                 <span>Giá tăng dần</span>
@@ -79,13 +66,24 @@
                                 <img src="${p.imageUrl}" alt="${p.name}">
                             </div>
                             <div class="product-info">
-                                <h3>${p.name}</h3>
-                                <span class="price">
-                    <fmt:setLocale value="vi_VN"/>
-                    <fmt:formatNumber value="${p.price}" type="currency" currencySymbol="đ"/>
-                  </span>
-                                    <%-- Giá gốc (Nếu có logic giá sale thì thêm vào đây) --%>
-                                    <%-- <del class="compare-price">2.000.000₫</del> --%>
+                                <h3><c:out value="${p.name}" /></h3>
+                                <div class="price-container">
+                                    <fmt:setLocale value="vi_VN"/>
+                                    <c:choose>
+                                        <c:when test="${p.discountPercent > 0}">
+                                            <%-- Tính giá sau giảm nếu cần hoặc dùng salePrice từ DB --%>
+                                            <span class="price-sale" style="color:red;">
+                                                <fmt:formatNumber value="${p.price * (1 - p.discountPercent)}" type="currency" currencySymbol="đ" />
+                                            </span>
+                                            <del><fmt:formatNumber value="${p.price}" type="currency" currencySymbol="đ"/></del>
+                                        </c:when>
+                                        <c:otherwise>
+                                            <span class="price">
+                                                <fmt:formatNumber value="${p.price}" type="currency" currencySymbol="đ"/>
+                                            </span>
+                                        </c:otherwise>
+                                    </c:choose>
+                                </div>
                             </div>
                         </a>
                     </div>

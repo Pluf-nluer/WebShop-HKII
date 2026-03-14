@@ -4,13 +4,12 @@ import java.sql.Timestamp;
 
 public class Sale {
     private int id;
-    private double discountPercent; 
+    private double discountPercent;
     private Timestamp startSale;
     private Timestamp endSale;
 
     public Sale() {}
 
-    
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 

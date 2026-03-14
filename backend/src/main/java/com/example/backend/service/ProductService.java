@@ -27,13 +27,10 @@ public class ProductService {
 
 
     public void updateProduct(Product product, ProductAttribute attribute, ProductImage image) {
-        
         productDAO.updateProduct(product);
 
-        
         productDAO.updateProductAttribute(product.getId(), attribute);
 
-        
         if (image.getImageUrl() != null && !image.getImageUrl().isEmpty()) {
             productDAO.updateProductImage(product.getId(), image);
         }

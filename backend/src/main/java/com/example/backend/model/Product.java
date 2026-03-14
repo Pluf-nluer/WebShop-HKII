@@ -16,10 +16,8 @@ public class Product {
 
     private boolean isFeatured;
 
-    
     private int categoryId;
 
-    
     private Timestamp createdAt;
     private Timestamp updatedAt;
 
@@ -46,7 +44,6 @@ public class Product {
     public double getDiscountPercent() { return discountPercent; }
     public void setDiscountPercent(double discountPercent) { this.discountPercent = discountPercent; }
 
-    
     public double getSalePrice() {
         return this.price * (1 - this.discountPercent);
     }
@@ -152,8 +149,6 @@ public class Product {
         this.attribute = attribute;
     }
 
-
-    
     @Override
     public String toString() {
         return "Product{" +

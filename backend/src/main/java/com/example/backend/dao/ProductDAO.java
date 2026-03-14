@@ -54,30 +54,27 @@ public class ProductDAO {
         return list;
     }
 
-    
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+//    public List<Product> getAllProducts(int offset, int limit) {
+//        List<Product> list = new ArrayList<>();
+//
+//       String sql = "SELECT p.*, pi.image_url FROM products p " +
+//                "LEFT JOIN product_images pi ON p.id = pi.product_id " +
+//                "GROUP BY p.id ORDER BY p.id LIMIT ?, ?";
+//
+//
+//        try (Connection conn = DBConnection.getConnection();
+//        PreparedStatement ps = conn.prepareStatement(sql);) {
+//            ps.setInt(1, offset);
+//            ps.setInt(2, limit);
+//            ResultSet rs = ps.executeQuery();
+//            while(rs.next()) {
+//                list.add(mapResultSetToProduct(rs));
+//            }
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return list;
+//    }
     public List<Product> getAllProducts(int offset, int limit) {
         List<Product> list = new ArrayList<>();
         String sql = "SELECT p.*, " +
@@ -95,13 +92,12 @@ public class ProductDAO {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Product p = mapResultSetToProduct(rs);
-                    
                     p.setDiscountPercent(rs.getDouble("discount_percent"));
                     list.add(p);
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace(); 
+            e.printStackTrace();
         }
         return list;
     }
@@ -121,7 +117,6 @@ public class ProductDAO {
 
     public List<Product> getProductsByCategory(int categoryId, int offset, int limit) {
         List<Product> list = new ArrayList<>();
-        
         String sql = "SELECT p.*, " +
                 "(SELECT pi.image_url FROM product_images pi WHERE pi.product_id = p.id LIMIT 1) AS image_url, " +
                 "s.discount_percent " +
@@ -140,7 +135,6 @@ public class ProductDAO {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     Product p = mapResultSetToProduct(rs);
-                    
                     p.setDiscountPercent(rs.getDouble("discount_percent"));
                     list.add(p);
                 }
@@ -219,13 +213,8 @@ public class ProductDAO {
         return product;
     }
 
-    
-
-
-    
     public List<Product> searchProductsByName(String keyword) {
         List<Product> list = new ArrayList<>();
-        
         String sql = "SELECT p.*, pi.image_url FROM products p " +
                 "LEFT JOIN product_images pi ON p.id = pi.product_id " +
                 "WHERE p.name LIKE ? AND p.status = 'active' " +
@@ -237,7 +226,7 @@ public class ProductDAO {
             ps.setString(1, "%" + keyword + "%");
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                list.add(mapResultSetToProduct(rs)); 
+                list.add(mapResultSetToProduct(rs));
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -339,7 +328,6 @@ public class ProductDAO {
     }
 
     public int insertProduct(Product p) {
-        
         String sql = "INSERT INTO products (name, price, stock, category_id, full_description, status, is_featured, created_at) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, NOW())";
 
@@ -369,7 +357,6 @@ public class ProductDAO {
         return generatedId;
     }
 
-    
     public void insertProductAttributes(int productId, ProductAttribute pa) {
         String sql = "INSERT INTO product_attributes (product_id, material, origin, size, weight, color, created_ad) VALUES (?, ?, ?, ?, ?, ?, NOW())";
         try (Connection conn = DBConnection.getConnection();
@@ -456,7 +443,6 @@ public class ProductDAO {
 
     public List<Review> getReviewsByProductId(int productId) {
         List<Review> reviews = new ArrayList<>();
-        
         String sql = "SELECT r.*, u.full_name FROM review r " +
                 "JOIN users u ON r.user_id = u.id " +
                 "WHERE r.pid = ? ORDER BY r.create_at DESC";
@@ -468,15 +454,14 @@ public class ProductDAO {
 
             while (rs.next()) {
                 Review review = new Review();
-                review.setId(rs.getInt("id")); 
-                review.setUserId(rs.getInt("user_id")); 
-                review.setProductId(rs.getInt("pid")); 
-                review.setRating(rs.getInt("rating")); 
-                review.setComment(rs.getString("comment")); 
-                review.setCreatedAt(rs.getTimestamp("create_at")); 
+                review.setId(rs.getInt("id"));
+                review.setUserId(rs.getInt("user_id"));
+                review.setProductId(rs.getInt("pid"));
+                review.setRating(rs.getInt("rating"));
+                review.setComment(rs.getString("comment"));
+                review.setCreatedAt(rs.getTimestamp("create_at"));
 
-                
-                review.setUserName(rs.getString("full_name")); 
+                review.setUserName(rs.getString("full_name"));
 
                 reviews.add(review);
             }

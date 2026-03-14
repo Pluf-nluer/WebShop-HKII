@@ -17,13 +17,7 @@ public class HomeServlet extends HttpServlet {
 
         BlogDAO blogDAO = new BlogDAO();
 
-        
         request.setAttribute("featuredPosts", blogDAO.getFeaturedPosts(3));
-
-        
-        
-
-        
         request.getRequestDispatcher("index.jsp").forward(request, response);
     }
 }

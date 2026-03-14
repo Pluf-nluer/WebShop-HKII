@@ -18,9 +18,9 @@ import java.util.List;
 
 @WebServlet(name = "AdminProductServlet", value = "/admin/products")
 @MultipartConfig(
-        fileSizeThreshold = 1024 * 1024 * 2, 
-        maxFileSize = 1024 * 1024 * 10,      
-        maxRequestSize = 1024 * 1024 * 50    
+        fileSizeThreshold = 1024 * 1024 * 2,
+        maxFileSize = 1024 * 1024 * 10,
+        maxRequestSize = 1024 * 1024 * 50
 )
 public class AdminProductServlet extends HttpServlet {
 
@@ -71,14 +71,11 @@ public class AdminProductServlet extends HttpServlet {
         }
     }
 
-    
 
     private String getFinalImageUrl(HttpServletRequest request) throws IOException, ServletException {
-        
         Part filePart = request.getPart("image_file");
         if (filePart != null && filePart.getSize() > 0) {
             String fileName = System.currentTimeMillis() + "_" + filePart.getSubmittedFileName();
-            
             String uploadPath = getServletContext().getRealPath("/uploads");
             File uploadDir = new File(uploadPath);
             if (!uploadDir.exists()) uploadDir.mkdir();
@@ -86,7 +83,6 @@ public class AdminProductServlet extends HttpServlet {
             filePart.write(uploadPath + File.separator + fileName);
             return "uploads/" + fileName;
         }
-        
         return request.getParameter("image_url");
     }
 
@@ -97,7 +93,6 @@ public class AdminProductServlet extends HttpServlet {
         int offset = (startParam != null) ? Integer.parseInt(startParam) : 0;
         int limit = (lengthParam != null) ? Integer.parseInt(lengthParam) : 1000;
 
-        
         List<Product> listProducts = productService.getAllProductsForAdmin(offset, limit);
 
         request.setAttribute("listProducts", listProducts);
@@ -121,13 +116,9 @@ public class AdminProductServlet extends HttpServlet {
         response.sendRedirect(request.getContextPath() + "/admin/products?message=deleted");
     }
 
-    
-
     private void insertProduct(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        
         Product newProduct = mapRequestToProduct(request);
 
-        
         ProductAttribute pa = new ProductAttribute();
         pa.setMaterial(request.getParameter("material"));
         pa.setOrigin(request.getParameter("origin"));
@@ -135,27 +126,23 @@ public class AdminProductServlet extends HttpServlet {
         pa.setWeight(request.getParameter("weight"));
         pa.setColor(request.getParameter("color"));
 
-        
         String imageUrl = getFinalImageUrl(request);
         ProductImage pImg = new ProductImage();
         pImg.setImageUrl(imageUrl);
         newProduct.setImage(pImg);
 
-        
         productService.insertFullProduct(newProduct, pa);
 
         response.sendRedirect(request.getContextPath() + "/admin/products?message=inserted");
     }
-    
+
     private void updateProduct(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
-        
         Product product = mapRequestToProduct(request);
         int productId = Integer.parseInt(request.getParameter("id"));
         product.setId(productId);
 
-        
         ProductAttribute pa = new ProductAttribute();
-        pa.setProductId(productId); 
+        pa.setProductId(productId);
         pa.setMaterial(request.getParameter("material"));
         pa.setOrigin(request.getParameter("origin"));
         pa.setSize(request.getParameter("dimensions"));
@@ -167,7 +154,6 @@ public class AdminProductServlet extends HttpServlet {
         pi.setProductId(productId);
         pi.setImageUrl(imageUrl);
 
-        
         productService.updateProduct(product, pa, pi);
 
         response.sendRedirect(request.getContextPath() + "/admin/products?message=updated");

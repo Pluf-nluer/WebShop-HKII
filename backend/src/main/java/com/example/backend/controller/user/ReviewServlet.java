@@ -22,30 +22,25 @@ public class ReviewServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        
         User user = (User) request.getSession().getAttribute("user");
         if (user == null) {
             response.sendRedirect("login.jsp");
             return;
         }
 
-        
         int productId = Integer.parseInt(request.getParameter("productId"));
         int rating = Integer.parseInt(request.getParameter("rating"));
         String comment = request.getParameter("comment");
 
-        
         Review review = new Review();
         review.setUserId(user.getId());
         review.setProductId(productId);
         review.setRating(rating);
         review.setComment(comment);
 
-        
         boolean success = reviewDAO.insertReview(review);
 
         if (success) {
-            
             response.sendRedirect("review-success.jsp");
         } else {
             request.setAttribute("error", "Không thể gửi đánh giá, vui lòng thử lại!");
@@ -56,7 +51,6 @@ public class ReviewServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
         showReviewForm(request, response);
     }
 
@@ -74,8 +68,6 @@ public class ReviewServlet extends HttpServlet {
         if (orderIdStr != null && !orderIdStr.isEmpty()) {
             order = orderDAO.getOrderById(Integer.parseInt(orderIdStr));
         } else {
-            
-            
             order = orderDAO.getLatestOrderByUserId(user.getId());
         }
 

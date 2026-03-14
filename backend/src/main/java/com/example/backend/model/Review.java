@@ -5,7 +5,7 @@ import java.sql.Timestamp;
 public class Review {
     private int id;
     private int userId;
-    private int productId; 
+    private int productId;
     private int rating;
     private String comment;
     private Timestamp createdAt;
